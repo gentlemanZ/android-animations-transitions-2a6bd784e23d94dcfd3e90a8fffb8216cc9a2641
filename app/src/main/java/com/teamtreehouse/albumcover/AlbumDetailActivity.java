@@ -1,5 +1,7 @@
 package com.teamtreehouse.albumcover;
 
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.res.ColorStateList;
@@ -9,6 +11,8 @@ import android.os.Bundle;
 import android.support.v7.graphics.Palette;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.animation.AnimatorSet;
@@ -36,24 +40,31 @@ public class AlbumDetailActivity extends Activity {
     }
     //for 3/27 adding animation on floating animation button.
     private void animate(){
-        ObjectAnimator scalex = ObjectAnimator.ofFloat(fab,"scaleX",0,1);
-        ObjectAnimator scaley = ObjectAnimator.ofFloat(fab,"scaleY",0,1);
-        AnimatorSet scaleFab = new AnimatorSet();
-        scaleFab.playTogether(scalex,scaley);
-
+//        ObjectAnimator scalex = ObjectAnimator.ofFloat(fab,"scaleX",0,1);
+//        ObjectAnimator scaley = ObjectAnimator.ofFloat(fab,"scaleY",0,1);
+//        AnimatorSet scaleFab = new AnimatorSet();
+//        scaleFab.playTogether(scalex,scaley);
+        Animator scaleFab = AnimatorInflater.loadAnimator(this,R.animator.scale);
+        scaleFab.setTarget(fab);
 
         int titleStartValue = titlePanel.getTop();
         int titleEndValue = titlePanel.getBottom();
         ObjectAnimator animatorTitle = ObjectAnimator.ofInt(titlePanel,"bottom",titleStartValue,titleEndValue);
+        animatorTitle.setInterpolator(new AccelerateInterpolator());
 
         int trackStartValue = trackPanel.getTop();
         int trackEndValue = trackPanel.getBottom();
         ObjectAnimator animatorTrack= ObjectAnimator.ofInt(trackPanel,"bottom",trackStartValue,trackEndValue);
+        animatorTrack.setInterpolator(new DecelerateInterpolator());
         //need to make the view disappear when we open the view.
         titlePanel.setBottom(titleStartValue);
         trackPanel.setBottom(titleStartValue);
         fab.setScaleX(0);
         fab.setScaleY(0);
+
+        //animatorTitle.setDuration(1000);
+        //animatorTrack.setDuration(1000);
+        //animatorTitle.setStartDelay(1000);
 
         AnimatorSet set = new AnimatorSet();
         set.playSequentially(animatorTitle,animatorTrack, scaleFab);
