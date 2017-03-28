@@ -33,10 +33,16 @@ public class AlbumDetailActivity extends Activity {
         ButterKnife.bind(this);
         populate();
     }
+    //for 3/27 adding animation on floating animation button.
+    private void animate(){
+        fab.setScaleX(0);
+        fab.setScaleY(0);
+        fab.animate().scaleX(1).scaleY(1).start();
+    }
 
     @OnClick(R.id.album_art)
     public void onAlbumArtClick(View view) {
-
+        animate();
     }
 
     private void populate() {
