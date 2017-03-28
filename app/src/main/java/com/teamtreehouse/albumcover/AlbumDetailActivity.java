@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-
+import android.animation.AnimatorSet;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -36,9 +36,11 @@ public class AlbumDetailActivity extends Activity {
     }
     //for 3/27 adding animation on floating animation button.
     private void animate(){
-        fab.setScaleX(0);
-        fab.setScaleY(0);
-        fab.animate().scaleX(1).scaleY(1).start();
+        ObjectAnimator scalex = ObjectAnimator.ofFloat(fab,"scaleX",0,1);
+        ObjectAnimator scaley = ObjectAnimator.ofFloat(fab,"scaleY",0,1);
+        AnimatorSet scaleFab = new AnimatorSet();
+        scaleFab.playTogether(scalex,scaley);
+
 
         int titleStartValue = titlePanel.getTop();
         int titleEndValue = titlePanel.getBottom();
@@ -47,6 +49,15 @@ public class AlbumDetailActivity extends Activity {
         int trackStartValue = trackPanel.getTop();
         int trackEndValue = trackPanel.getBottom();
         ObjectAnimator animatorTrack= ObjectAnimator.ofInt(trackPanel,"bottom",trackStartValue,trackEndValue);
+        //need to make the view disappear when we open the view.
+        titlePanel.setBottom(titleStartValue);
+        trackPanel.setBottom(titleStartValue);
+        fab.setScaleX(0);
+        fab.setScaleY(0);
+
+        AnimatorSet set = new AnimatorSet();
+        set.playSequentially(animatorTitle,animatorTrack, scaleFab);
+        set.start();
     }
 
     @OnClick(R.id.album_art)
