@@ -21,6 +21,9 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.animation.AnimatorSet;
+
+import com.teamtreehouse.albumcover.transition.Scale;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -36,12 +39,17 @@ public class AlbumDetailActivity extends Activity {
     @Bind(R.id.track_panel) ViewGroup trackPanel;
     @Bind(R.id.detail_container) ViewGroup detailContainer;
 
+    private TransitionManager mTransitionManager;
+    private  Scene mExpandedScene;
+    private Scene mCollapsedScene;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album_detail);
         ButterKnife.bind(this);
         populate();
+        setupTransitions();
     }
     //for 3/27 adding animation on floating animation button.
     private void animate(){
@@ -83,10 +91,18 @@ public class AlbumDetailActivity extends Activity {
 
     @OnClick(R.id.track_panel)
     public void onTrackPanelClicked(View view){
-        ViewGroup transitionRoot = detailContainer;
-        Scene expandedScene = Scene.getSceneForLayout(transitionRoot,R.layout.activity_album_detail_expended,view.getContext());
 
-        expandedScene.setEnterAction(new Runnable() {
+        //TransitionManager.go(expandedScene,transitionSet);
+    }
+
+    private void setupTransitions() {
+        mTransitionManager = new TransitionManager();
+        ViewGroup transitionRoot = detailContainer;
+
+        // Expanded scene
+        mExpandedScene = Scene.getSceneForLayout(transitionRoot, R.layout.activity_album_detail_expended, this);
+
+        mExpandedScene.setEnterAction(new Runnable() {
             @Override
             public void run() {
                 ButterKnife.bind(AlbumDetailActivity.this);
@@ -94,16 +110,38 @@ public class AlbumDetailActivity extends Activity {
             }
         });
 
-        TransitionSet transitionSet= new TransitionSet();
-        transitionSet.setOrdering(TransitionSet.ORDERING_SEQUENTIAL);
+        TransitionSet expandTransitionSet= new TransitionSet();
+        expandTransitionSet.setOrdering(TransitionSet.ORDERING_SEQUENTIAL);
         ChangeBounds changeBounds =new ChangeBounds();
         changeBounds.setDuration(200);
-        transitionSet.addTransition(changeBounds);
+        expandTransitionSet.addTransition(changeBounds);
         Fade fadeLyrics = new Fade();
         fadeLyrics.setDuration(150);
         fadeLyrics.addTarget(R.id.lyrics);
-        transitionSet.addTransition(fadeLyrics);
-        TransitionManager.go(expandedScene,transitionSet);
+        expandTransitionSet.addTransition(fadeLyrics);
+
+        // Collapsed scene
+        mCollapsedScene = Scene.getSceneForLayout(transitionRoot, R.layout.activity_album_detail, this);
+
+        mCollapsedScene.setEnterAction(new Runnable() {
+            @Override
+            public void run() {
+                ButterKnife.bind(AlbumDetailActivity.this);
+                populate();
+            }
+        });
+
+        TransitionSet collapseTransitionSet= new TransitionSet();
+        collapseTransitionSet.setOrdering(TransitionSet.ORDERING_SEQUENTIAL);
+
+        Fade fadeOutLyrics = new Fade();
+        fadeOutLyrics.setDuration(150);
+        fadeOutLyrics.addTarget(R.id.lyrics);
+        collapseTransitionSet.addTransition( fadeOutLyrics);
+
+        ChangeBounds resetBounds =new ChangeBounds();
+        resetBounds.setDuration(200);
+        collapseTransitionSet.addTransition(resetBounds);
     }
 
     private void populate() {
