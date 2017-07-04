@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.transition.Explode;
@@ -83,7 +84,7 @@ public class AlbumListActivity extends Activity {
                         intent.putExtra(AlbumDetailActivity.EXTRA_ALBUM_ART_RESID, albumArtResId);
 
                         //adding transitions between scene using Activity options.
-                        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
+                        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                                 AlbumListActivity.this, vh.albumArt, "albumArt");
                         startActivity(intent, options.toBundle());
 
